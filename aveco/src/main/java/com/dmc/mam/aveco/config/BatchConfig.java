@@ -37,18 +37,18 @@ public class BatchConfig {
 	
 	
 	@Bean
-	public Job footballJob(JobListener listener) {
+	public Job avecoJob(JobListener listener) {
 	    return this.jobBuilderFactory.get("test")
 	    				.incrementer(new RunIdIncrementer())
 	    				.listener(listener)
-	                     .start(aveco())
+	                     .start(avecoStep())
 	                     .build();
 	}
 	
 	 @Bean
-	    public Step aveco() {
+	    public Step avecoStep() {
 	        return stepBuilderFactory.get("step1")
-	            .<Material, Material> chunk(10)
+	            .<Material, Material> chunk(20)
 	            .reader(reader(null))
 	            .processor(processor())
 	            .writer(writer())
@@ -66,11 +66,6 @@ public class BatchConfig {
 		writer.setEntityManagerFactory(entityManagerFactory);
 		return writer;
 	}
-
-//	@Bean
-//	public TaskExecutor taskExecutor(){
-//	    return new SimpleAsyncTaskExecutor("aveco_batch");
-//	}
 	
 	@Bean
 	@StepScope 

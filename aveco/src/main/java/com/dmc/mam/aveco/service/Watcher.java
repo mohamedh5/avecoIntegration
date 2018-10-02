@@ -1,5 +1,7 @@
+
 package com.dmc.mam.aveco.service;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
@@ -8,26 +10,19 @@ import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
-
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobParametersBuilder;
-import org.springframework.batch.core.JobParametersInvalidException;
-import org.springframework.batch.core.launch.JobLauncher;
-import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
-import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
-import org.springframework.batch.core.repository.JobRestartException;
+import java.util.concurrent.BlockingQueue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
+import com.dmc.mam.model.DelayedFile;
+
 @Service
 public class Watcher {
 
 	@Autowired
-	private JobLauncher jobLauncher;
-	@Autowired
-	private Job job;
+	private BlockingQueue<DelayedFile> queue;
 	private WatchService fileWatcher;
 	private WatchKey key;
 
@@ -41,7 +36,7 @@ public class Watcher {
 
 	@EventListener(ApplicationReadyEvent.class)
 	public void run() {
-
+		System.out.println("************* UP *************");
 		while (true) {
 
 			try {
@@ -51,16 +46,13 @@ public class Watcher {
 				e.printStackTrace();
 			}
 
-			for (WatchEvent event : key.pollEvents()) {
+			for (WatchEvent<?> event : key.pollEvents()) {
 				Path fileName = (Path) event.context();
-				String fullPath = directory.resolve(fileName).toString();
-				try {
-					jobRunner(fullPath);
-				} catch (JobExecutionAlreadyRunningException | JobRestartException | JobInstanceAlreadyCompleteException
-						| JobParametersInvalidException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				System.out.println(fileName.toString() + " caught **************");
+				if (!fileName.toString().endsWith("xml"))
+					continue;
+				File fullPath = directory.resolve(fileName).toFile();
+				publishToQueue(fullPath);
 			}
 
 			boolean valid = key.reset();
@@ -69,14 +61,18 @@ public class Watcher {
 			}
 		}
 	}
-	public void jobRunner(String fileLocation) throws JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException {
-		JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
-	    jobParametersBuilder.addString("fileLocation", fileLocation);
-		jobLauncher.run(job, jobParametersBuilder.toJobParameters());
+
+	public void publishToQueue(File fileLocation) {
+		DelayedFile file = new DelayedFile(fileLocation);
+		if (queue.contains(file))
+			queue.remove(file);
+		queue.offer(file);
+		System.out.println(file.getFileLocation() + " pushed **************");
 	}
-	
+
 	public void register() throws IOException {
-		key = directory.register(fileWatcher, StandardWatchEventKinds.ENTRY_CREATE);
+		key = directory.register(fileWatcher, StandardWatchEventKinds.ENTRY_CREATE,
+				StandardWatchEventKinds.ENTRY_MODIFY);
 	}
 
 }

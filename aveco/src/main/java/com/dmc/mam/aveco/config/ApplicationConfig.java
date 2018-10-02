@@ -1,6 +1,8 @@
 package com.dmc.mam.aveco.config;
 
 import java.util.Properties;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.DelayQueue;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
@@ -16,11 +18,15 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import com.dmc.mam.model.DelayedFile;
+
 @Configuration
 @EnableJpaRepositories(basePackages = "com.dmc.mam.repository")
+@EnableScheduling
 @EnableTransactionManagement
 @PropertySource("classpath:application.properties")
 public class ApplicationConfig {
@@ -77,4 +83,9 @@ public class ApplicationConfig {
 	        properties.put("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
 	        return properties;
 	    }
+	  
+	  @Bean
+	  public BlockingQueue<DelayedFile> getQueue() {
+		  return new DelayQueue<>();
+	  }
 }
