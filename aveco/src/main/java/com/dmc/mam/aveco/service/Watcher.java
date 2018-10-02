@@ -12,6 +12,7 @@ import java.nio.file.WatchService;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.JobParametersInvalidException;
+import org.springframework.batch.core.annotation.AfterJob;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
@@ -69,7 +70,6 @@ public class Watcher {
 			}
 		}
 	}
-
 	public void jobRunner(String fileLocation) throws JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException {
 		JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
 	    jobParametersBuilder.addString("fileLocation", fileLocation);

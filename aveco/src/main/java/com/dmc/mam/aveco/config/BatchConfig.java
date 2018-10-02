@@ -18,12 +18,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
+import com.dmc.mam.aveco.service.JobListener;
 import com.dmc.mam.model.Material;
 import com.dmc.mam.model.MetaData;
 
 @Configuration
 @EnableBatchProcessing
-public class AppConfig {
+public class BatchConfig {
 
 	@Autowired
 	public JobBuilderFactory jobBuilderFactory;
@@ -36,9 +37,10 @@ public class AppConfig {
 	
 	
 	@Bean
-	public Job footballJob() {
+	public Job footballJob(JobListener listener) {
 	    return this.jobBuilderFactory.get("test")
 	    				.incrementer(new RunIdIncrementer())
+	    				.listener(listener)
 	                     .start(aveco())
 	                     .build();
 	}
