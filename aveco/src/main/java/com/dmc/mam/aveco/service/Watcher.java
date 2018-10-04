@@ -12,6 +12,7 @@ import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.concurrent.BlockingQueue;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,7 @@ public class Watcher {
 	private WatchService fileWatcher;
 	private WatchKey key;
 
-	private final static Path directory = Paths.get("D:\\javaProject MAM\\MAM\\aveco xml");
+	private final static Path directory = Paths.get("V:\\avecoDBXML");
 
 	public Watcher() throws IOException {
 		super();
@@ -36,7 +37,6 @@ public class Watcher {
 
 	@EventListener(ApplicationReadyEvent.class)
 	public void run() {
-		System.out.println("************* UP *************");
 		while (true) {
 
 			try {
@@ -48,7 +48,6 @@ public class Watcher {
 
 			for (WatchEvent<?> event : key.pollEvents()) {
 				Path fileName = (Path) event.context();
-				System.out.println(fileName.toString() + " caught **************");
 				if (!fileName.toString().endsWith("xml"))
 					continue;
 				File fullPath = directory.resolve(fileName).toFile();
@@ -63,11 +62,11 @@ public class Watcher {
 	}
 
 	public void publishToQueue(File fileLocation) {
-		DelayedFile file = new DelayedFile(fileLocation);
+		DelayedFile file = createDelayedFile();
+		file.setFileLocation(fileLocation);
 		if (queue.contains(file))
 			queue.remove(file);
 		queue.offer(file);
-		System.out.println(file.getFileLocation() + " pushed **************");
 	}
 
 	public void register() throws IOException {
@@ -75,4 +74,6 @@ public class Watcher {
 				StandardWatchEventKinds.ENTRY_MODIFY);
 	}
 
+	@Lookup
+	protected DelayedFile createDelayedFile() {return null;}; 
 }

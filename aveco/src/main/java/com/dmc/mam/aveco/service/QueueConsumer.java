@@ -14,6 +14,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.dmc.mam.model.DelayedFile;
+
 @Service
 public class QueueConsumer {
 
@@ -23,13 +24,13 @@ public class QueueConsumer {
 	private JobLauncher jobLauncher;
 	@Autowired
 	private Job job;
-	
-	@Scheduled(initialDelay = 5000,fixedDelay = 180000)
+
+	@Scheduled(initialDelay = 5000, fixedDelay = 120000)
 	public void consume() {
-		System.out.println("starting *******************   ");
-		while(queue.peek() != null) {
+		while (queue.peek() != null && !queue.isEmpty()) {
 			DelayedFile file = queue.poll();
-			System.out.println(file.getFileLocation() + " polled **************");
+			if (file == null)
+				continue;
 			String fileLocation = file.getFileLocation().getAbsolutePath();
 			try {
 				jobRunner(fileLocation);
@@ -40,10 +41,12 @@ public class QueueConsumer {
 			}
 		}
 	}
+
 	
-	public void jobRunner(String fileLocation) throws JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException {
+	public void jobRunner(String fileLocation) throws JobExecutionAlreadyRunningException, JobRestartException,
+			JobInstanceAlreadyCompleteException, JobParametersInvalidException {
 		JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
-	    jobParametersBuilder.addString("fileLocation", fileLocation);
+		jobParametersBuilder.addString("fileLocation", fileLocation);
 		jobLauncher.run(job, jobParametersBuilder.toJobParameters());
 	}
 }

@@ -4,17 +4,15 @@ import java.io.File;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
+@Scope("prototype")
 public class DelayedFile implements Delayed {
 
-	private final long time = System.currentTimeMillis() + 120000;
+	private final long time = System.currentTimeMillis() + 50000;
 	private File fileLocation;
-
-	public DelayedFile(File file) {
-		this.fileLocation = file;
-	}
 	
 	public long getTime() {
 		return time;
@@ -22,6 +20,10 @@ public class DelayedFile implements Delayed {
 	
 	public File getFileLocation() {
 		return fileLocation;
+	}
+
+	public void setFileLocation(File fileLocation) {
+		this.fileLocation = fileLocation;
 	}
 
 	@Override

@@ -31,7 +31,7 @@ public class MetaData {
 	private String id;
 	@Column(name="md_key")
 	private String key;
-	@Column(name="md_value",columnDefinition = "LONGTEXT")
+	@Column(name="md_value",columnDefinition = "text")
 	private String value;
 
 	/**

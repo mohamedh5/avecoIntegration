@@ -39,19 +39,14 @@
 			<artifactId>spring-boot-starter-batch</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-ws</artifactId>
-			<version>1.1.4.RELEASE</version>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-oxm</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.microsoft.sqlserver</groupId>
 			<artifactId>mssql-jdbc</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-		<dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-        </dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
