@@ -7,13 +7,13 @@ import com.dmc.mam.aveco.model.Catigories;
 
 public interface CatigoriesJpaRepository extends JpaRepository<Catigories, String> {
 
-//	@Query("SELECT C.fullName FROM Catigories C "
-//			+ "JOIN C.parent P "
-//			+ "WHERE C.shortName = :shortName "
-//			+ "AND P.shortName = :parentShortName")
-//	public String getFullNameByShortName(String parentShortName,String shortName);
+	@Query("SELECT C.fullName FROM Catigories C "
+			+ "JOIN C.parent P "
+			+ "WHERE C.shortName = :shortName "
+			+ "AND P.shortName = :parentShortName")
+	String getFullNameByShortName(String parentShortName,String shortName);
 	
 	@Query("SELECT DISTINCT C.fullName FROM Catigories C "
 			+ "WHERE C.shortName = :shortName ")
-	public String getFullNameByShortName(String shortName);
+	String getFullNameByShortName(String shortName);
 }

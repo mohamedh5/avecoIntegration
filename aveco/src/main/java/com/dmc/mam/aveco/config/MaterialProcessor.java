@@ -40,11 +40,12 @@ public class MaterialProcessor implements ItemProcessor<Material, Material> {
 		if(ref != null)
 			item.setHistory(ref);
 		
-		String fullNameCat1 = shortNameCatigoryToFull(item.getCat1());
-		String fullNameCat2 = shortNameCatigoryToFull(item.getCat2());
+		
+		String fullNameCat2 = shortNameCatigoryToFull(item.getCat1(),item.getCat2());
+		String fullNameCat1 = fullNameCat2 == null ? shortNameCatigoryToFull(item.getCat1()) : fullNameCat2;
 		
 		item.setCat1(fullNameCat1 == null ? item.getCat1() : fullNameCat1 );
-		item.setCat2(fullNameCat2 == null ? item.getCat2() : fullNameCat2);                                          
+		item.setCat2(fullNameCat2 == null ? "Other Other" : fullNameCat2);                                          
 		return item;
 	}
 	
@@ -52,9 +53,9 @@ public class MaterialProcessor implements ItemProcessor<Material, Material> {
 		return cjpa.getFullNameByShortName(shortName);
 	}
 	
-//	private String shortNameCatigoryToFull(String parentShortName,String shortName) {
-//		return cjpa.getFullNameByShortName(parentShortName,shortName);
-//	}
+	private String shortNameCatigoryToFull(String parentShortName,String shortName) {
+		return cjpa.getFullNameByShortName(parentShortName,shortName);
+	}
 	
 	private String newIdec(String idec,String recId) {
 		if (idec == "" || idec == null) {
