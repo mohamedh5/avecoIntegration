@@ -1,6 +1,7 @@
-package com.dmc.mam.model;
+package com.dmc.mam.aveco.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -44,8 +45,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
             "origInAddr",
             "origOutAddr",
         })
-@Entity
 @XmlRootElement(name = "MatDescr")
+@Entity
 public class Material {
 	@Id
     private String id;
@@ -65,13 +66,15 @@ public class Material {
     private String cat2;
     private String cat4;
     private String mainQC;
-    
+    private LocalDateTime created;
+    private LocalDateTime modified;
     @OneToMany(orphanRemoval = true ,cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<MetaData> metadata;
+    @OneToMany(orphanRemoval = true ,cascade = CascadeType.MERGE,fetch = FetchType.LAZY)
+    private List<HistoryManager> history;
     
-    private LocalDateTime created;
-   
-    private LocalDateTime modified;
+    
+    
 
     /**
      * @return the id
@@ -360,4 +363,32 @@ public class Material {
     public void setModified(LocalDateTime modified) {
         this.modified = modified;
     }
+    /**
+	 * @return the History
+	 */
+    //@XmlTransient
+	public List<HistoryManager> geHistory() {
+		return history;
+	}
+
+	/**
+	 * @param metadataHistory the History to add
+	 */
+	public void addHistory(HistoryManager history) {
+		if(this.history == null) 
+			this.history = new ArrayList<>();
+		if(this.history.size() > 2) {
+			this.history.remove(0);
+		}
+		this.history.add(history);
+	}
+
+	/**
+	 * @param history the history to set
+	 */
+	public void setHistory(List<HistoryManager> history) {
+		this.history = history;
+	}
+	
+	
 }

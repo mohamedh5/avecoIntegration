@@ -1,10 +1,12 @@
-package com.dmc.mam.model;
+package com.dmc.mam.aveco.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Index;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlElement;
 
@@ -19,19 +21,19 @@ import org.hibernate.annotations.GenericGenerator;
  * @since 7/9/2018
  */
 @Entity
+@Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
 @Table(
 		name = "metadata",
-		indexes = {@Index(name= "metadata_Index",columnList= "md_key,md_value",unique= false)}
-		)
+		indexes = {
+				@Index(name= "metadata_key_Index",columnList= "md_key",unique= false)})
 public class MetaData {
-
 	@Id
     @GeneratedValue(generator = "uuid")
 	@GenericGenerator(name = "uuid" , strategy = "uuid2")
 	private String id;
 	@Column(name="md_key")
 	private String key;
-	@Column(name="md_value",columnDefinition = "text")
+	@Column(name="md_value",columnDefinition = "VARCHAR(MAX)")
 	private String value;
 
 	/**

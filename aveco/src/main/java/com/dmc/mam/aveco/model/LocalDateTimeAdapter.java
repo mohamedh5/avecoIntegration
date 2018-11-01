@@ -1,4 +1,4 @@
-package com.dmc.mam.model;
+package com.dmc.mam.aveco.model;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

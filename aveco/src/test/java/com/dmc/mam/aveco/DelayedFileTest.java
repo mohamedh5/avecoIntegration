@@ -5,23 +5,24 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.util.concurrent.BlockingQueue;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import javax.annotation.Resource;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.context.ApplicationContext;
 
-import com.dmc.mam.aveco.config.ApplicationConfig;
-import com.dmc.mam.model.DelayedFile;
+import com.dmc.mam.aveco.model.DelayedFile;
 
-@ContextConfiguration(classes = ApplicationConfig.class)
-@RunWith(SpringJUnit4ClassRunner.class)
+//@ContextConfiguration(classes = AvecoApplication.class)
+//@RunWith(SpringJUnit4ClassRunner.class)
 public class DelayedFileTest {
 
-	@Autowired
+	@Resource(name = "myQueue")
 	public BlockingQueue<DelayedFile> queue;
 	String root = "D:\\javaProject MAM\\MAM\\aveco xml\\";
-	@Test
+	@Autowired
+	ApplicationContext context;
+	
+	//@Test
 	public void PushToQueue() {
 		
 		publishToQueue(new File(root + "180909_070715600_352091.xml"));
@@ -31,17 +32,11 @@ public class DelayedFileTest {
 	}
 
 	public void publishToQueue(File fileLocation) {
-		DelayedFile file = new DelayedFile(fileLocation);
-		if (queue.contains(file))
-			queue.remove(file);
-		queue.offer(file);
+		DelayedFile Testfile = context.getBean(DelayedFile.class);
+		Testfile.setFileLocation(fileLocation);
+		if (queue.contains(Testfile))
+			queue.remove(Testfile);
+		queue.offer(Testfile);
 	}
 	
-	@Test
-	public void PollFromQueue() throws InterruptedException {
-		DelayedFile file = queue.take();
-		assertEquals("Not the same File" ,new File(root + "180909_070949280_352092.xml"), file.getFileLocation());
-		file = queue.take();
-		assertEquals("Not the same File" ,new File(root + "180909_070715600_352091.xml"), file.getFileLocation());
-	}
 }

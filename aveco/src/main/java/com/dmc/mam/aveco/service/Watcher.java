@@ -11,23 +11,23 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.concurrent.BlockingQueue;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.annotation.Resource;
+
 import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
-import com.dmc.mam.model.DelayedFile;
+import com.dmc.mam.aveco.model.DelayedFile;
 
 @Service
-public class Watcher {
-
-	@Autowired
-	private BlockingQueue<DelayedFile> queue;
+public class Watcher {     
+	@Resource(name = "myQueue")
+	private BlockingQueue<DelayedFile> myQueue;
 	private WatchService fileWatcher;
 	private WatchKey key;
-
-	private final static Path directory = Paths.get("V:\\avecoDBXML");
+	private final static Path DIRECTORY = Paths.get("//192.168.105.50//aveco//avecoDBXML");
 
 	public Watcher() throws IOException {
 		super();
@@ -50,7 +50,7 @@ public class Watcher {
 				Path fileName = (Path) event.context();
 				if (!fileName.toString().endsWith("xml"))
 					continue;
-				File fullPath = directory.resolve(fileName).toFile();
+				File fullPath = DIRECTORY.resolve(fileName).toFile();
 				publishToQueue(fullPath);
 			}
 
@@ -64,13 +64,13 @@ public class Watcher {
 	public void publishToQueue(File fileLocation) {
 		DelayedFile file = createDelayedFile();
 		file.setFileLocation(fileLocation);
-		if (queue.contains(file))
-			queue.remove(file);
-		queue.offer(file);
+		if (myQueue.contains(file))
+			myQueue.remove(file);
+		myQueue.offer(file);
 	}
 
 	public void register() throws IOException {
-		key = directory.register(fileWatcher, StandardWatchEventKinds.ENTRY_CREATE,
+		key = DIRECTORY.register(fileWatcher, StandardWatchEventKinds.ENTRY_CREATE,
 				StandardWatchEventKinds.ENTRY_MODIFY);
 	}
 

@@ -1,4 +1,4 @@
-package com.dmc.mam.model;
+package com.dmc.mam.aveco.model;
 
 import java.io.File;
 import java.util.concurrent.Delayed;
